@@ -1,0 +1,2 @@
+#riscv64-linux-gnu-gcc -static tests/test-progs/simplecim/src/simplecim.c -o tests/test-progs/simplecim/bin/simplecim
+gcc -I/usr/src/linux-headers-5.17.5-76051705-generic/arch/x86/include/ tests/test-progs/simplecim/src/simplecim.c -o tests/test-progs/simplecim/bin/x86/simplecim

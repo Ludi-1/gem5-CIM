@@ -62,7 +62,6 @@ def _get_resources_json() -> Dict:
 
     :returns: The Resources JSON (as a Python Dictionary).
     """
-
     # Note: Google Source does not properly support obtaining files as raw
     # text. Therefore when we open the URL we receive the JSON in base64
     # format. Conversion is needed before it can be loaded.

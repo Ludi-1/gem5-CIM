@@ -1,0 +1,7 @@
+Import('*')
+
+SimObject('BasicCIM.py', sim_objects=['BasicCIM'])
+
+Source('basic_cim.cc')
+
+DebugFlag('BasicCIM')

@@ -1,0 +1,11 @@
+Import('*')
+
+SimObject('CIM.py', sim_objects=['CIMDriver', 'BasicCIM'])
+
+Source('basic_cim.cc')
+Source('cim_driver.cc')
+
+DebugFlag('BasicCIM')
+DebugFlag('CIMDriver')
+
+CompoundFlag('CIMALL', ['BasicCIM', 'CIMDriver'])

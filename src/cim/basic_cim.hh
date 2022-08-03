@@ -1,6 +1,7 @@
 #ifndef __CIM_BASIC_CIM_HH__
 #define __CIM_BASIC_CIM_HH__
 
+#include "base/statistics.hh"
 #include "cim/cim_driver.hh"
 #include "debug/BasicCIM.hh"
 #include "dev/io_device.hh"
@@ -36,6 +37,21 @@ class BasicCIM : public BasicPioDevice
 
   protected:
     const ByteOrder byteOrder = ByteOrder::little;
+
+    struct CIMStats : public Stats::Group
+    {
+        Stats::Scalar cim_writes;
+        Stats::Scalar cim_reads;
+        Stats::Vector cim_storage;
+
+        CIMStats(Stats::Group *parent) :
+            Stats::Group(parent),
+            ADD_STAT(cim_writes, "Amount of writes on CIM device"),
+            ADD_STAT(cim_reads, "Amount of reads on CIM device"),
+            ADD_STAT(cim_storage, "Data content BasicCIM")
+        {
+        }
+    } cim_stats;
 };
 
 } // namespace gem5

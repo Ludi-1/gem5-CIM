@@ -13,19 +13,18 @@ class BasicCIM;
 
 class CIMDriver : public EmulatedDriver
 {
-  public:
-    PARAMS(CIMDriver);
-    CIMDriver(const Params &params);
+    public:
+        PARAMS(CIMDriver);
+        CIMDriver(const Params &params);
 
-    int ioctl(ThreadContext *tc, unsigned req, Addr ioc_buf) override;
+        int ioctl(ThreadContext *tc, unsigned req, Addr ioc_buf) override;
 
-    int open(ThreadContext *tc, int mode, int flags) override;
-    Addr mmap(ThreadContext *tc, Addr start, uint64_t length,
-              int prot, int tgt_flags, int tgt_fd, off_t offset) override;
+        int open(ThreadContext *tc, int mode, int flags) override;
+        Addr mmap(ThreadContext *tc, Addr start, uint64_t length,
+                int prot, int tgt_flags, int tgt_fd, off_t offset) override;
 
-  private:
-    BasicCIM *device;
-
+    private:
+        BasicCIM *device;
 };
 
 } // namespace gem5

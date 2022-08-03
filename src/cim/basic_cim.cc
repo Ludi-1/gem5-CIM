@@ -10,12 +10,15 @@
 #include "mem/packet_access.hh"
 #include "params/BasicCIM.hh"
 
+
 namespace gem5
 {
 
 BasicCIM::BasicCIM(const Params &params) :
-    BasicPioDevice(params, params.pio_size)
+    BasicPioDevice(params, params.pio_size),
+    cim_stats(this)
 {
+    cim_stats.cim_storage.init(params.pio_size);
     deviceStorage.resize(params.pio_size);
 }
 
@@ -36,6 +39,7 @@ BasicCIM::read(PacketPtr pkt)
 
     pkt->setUintX(deviceStorage[addr], byteOrder);
     pkt->makeResponse();
+    cim_stats.cim_reads++; //Increment cim_reads (scalar) stat by 1
     return pioDelay;
 }
 
@@ -48,6 +52,9 @@ BasicCIM::write(PacketPtr pkt)
 
     deviceStorage[addr] = pkt->getUintX(byteOrder);
     pkt->makeResponse();
+    cim_stats.cim_writes++; //Increment cim_writes (scalar) stat by 1
+    //Set storage vector to statistics vector (index of it)
+    cim_stats.cim_storage[addr] = deviceStorage[addr];
     return pioDelay;
 }
 

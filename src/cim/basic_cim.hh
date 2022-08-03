@@ -10,6 +10,8 @@
 namespace gem5
 {
 
+class CIMDriver;
+
 class BasicCIM : public BasicPioDevice
 {
   public:

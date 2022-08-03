@@ -4,6 +4,7 @@
 
 #include "base/logging.hh"
 #include "base/trace.hh"
+#include "cim/cim_driver.hh"
 #include "debug/BasicCIM.hh"
 #include "mem/packet.hh"
 #include "mem/packet_access.hh"

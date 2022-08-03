@@ -9,6 +9,8 @@
 namespace gem5
 {
 
+class BasicCIM;
+
 class CIMDriver : public EmulatedDriver
 {
   public:

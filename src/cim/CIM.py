@@ -9,6 +9,7 @@ class BasicCIM(BasicPioDevice):
     cxx_class = 'gem5::BasicCIM'
 
     pio_size = Param.Addr(0x1000, "PIO Size")
+    memory_data = Param.String(0, "Intial data content of device")
 
 #fake drivers for CIM device
 class CIMDriver(EmulatedDriver):

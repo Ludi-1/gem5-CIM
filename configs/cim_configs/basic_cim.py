@@ -44,6 +44,9 @@ system.cim = BasicCIM()
 system.cim.pio = system.membus.mem_side_ports
 system.cim.pio_addr = 0x200000000
 
+f = open("tests/test-progs/cim-tests/numbers.txt", "r")
+system.cim.memory_data = f.read()
+
 # Connect the system up to the membus
 system.system_port = system.membus.cpu_side_ports
 

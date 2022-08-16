@@ -1,6 +1,7 @@
 #ifndef __CIM_BASIC_CIM_HH__
 #define __CIM_BASIC_CIM_HH__
 
+#include "base/callback.hh"
 #include "base/statistics.hh"
 #include "cim/cim_driver.hh"
 #include "debug/BasicCIM.hh"
@@ -31,9 +32,11 @@ class BasicCIM : public BasicPioDevice
 
     void functionalAccess(PacketPtr pkt);
 
+    std::vector<uint64_t> deviceStorage;
+    void exitCallback(std::vector<uint64_t> deviceStorage);
+
   private:
     CIMDriver *_driver;
-    std::vector<uint64_t> deviceStorage;
 
   protected:
     const ByteOrder byteOrder = ByteOrder::little;
@@ -42,13 +45,11 @@ class BasicCIM : public BasicPioDevice
     {
         Stats::Scalar cim_writes;
         Stats::Scalar cim_reads;
-        Stats::Vector cim_storage;
 
         CIMStats(Stats::Group *parent) :
             Stats::Group(parent),
             ADD_STAT(cim_writes, "Amount of writes on CIM device"),
-            ADD_STAT(cim_reads, "Amount of reads on CIM device"),
-            ADD_STAT(cim_storage, "Data content BasicCIM")
+            ADD_STAT(cim_reads, "Amount of reads on CIM device")
         {
         }
     } cim_stats;

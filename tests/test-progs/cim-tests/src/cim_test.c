@@ -11,9 +11,10 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
 
-#define WR_VALUE _IOW('a',0x02,uint32_t)
+#define WR_VALUE _IOW('a', 0x02, uint32_t)
 // #define RD_VALUE _IOR('a','b',int32_t*)
 #define X_VALUE  _IO('a', 0x01)
+#define RUNEXE_VALUE _IO('a', 0x03)
 
 int main(void)
 {
@@ -28,8 +29,8 @@ int main(void)
 
   int io1 = ioctl(fd, X_VALUE);
   printf("ioctl1: %i\n", io1);
-  printf("cimwrite code: %ld\n", WR_VALUE);
 
+  printf("cimwrite code: %ld\n", WR_VALUE);
   uint32_t number = 69;
   int io2 = ioctl(fd, WR_VALUE, (uint32_t*) &number);
   printf("ioctl2: %i\n", io2);
@@ -49,6 +50,7 @@ int main(void)
   uint32_t value = *(uint32_t*) (cimPtr + 16);
   printf("text: %u\n", value);
 
+  int io3 = ioctl(fd, RUNEXE_VALUE);
   //close file
   close(fd);
 

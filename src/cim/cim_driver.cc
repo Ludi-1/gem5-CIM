@@ -3,7 +3,6 @@
 #include "base/trace.hh"
 #include "cim/basic_cim.hh"
 #include "cim/cim_ioctl.h"
-#include "cim/cim_mmap.h"
 #include "debug/CIMDriver.hh"
 #include "mem/port_proxy.hh"
 #include "mem/se_translating_port_proxy.hh"

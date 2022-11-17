@@ -32,3 +32,11 @@ configs/example/memcheck.cfg
 configs/dram/lowp_sweep.cfg
 .pyenv
 /.vscode/*
+compiler.exe
+cim_tile.exe
+wd_mem_input.txt
+rd_mem_input.txt
+traces.vcd
+compiler-output
+systemc-output
+instr_mem.txt

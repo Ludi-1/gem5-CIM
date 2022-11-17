@@ -1,3 +1,9 @@
+"""System with BasicCIM model
+Attaches CIM model to IO ports
+Adds a driver for SE mode
+Executes a custom CIM workload
+"""
+
 import m5
 # import all of the SimObjects
 from m5.objects import *
@@ -60,7 +66,7 @@ isa = str(m5.defines.buildEnv['TARGET_ISA']).lower()
 # grab the specific path to the binary
 thispath = os.path.dirname(os.path.realpath(__file__))
 binary = os.path.join(thispath, '../../',
-                      'tests/test-progs/cim-tests/bin/', isa, 'ioctl_test')
+                      'tests/test-progs/cim-tests/bin/', isa, 'mmm')
 
 system.workload = SEWorkload.init_compatible(binary)
 # Create a process for a simple "Hello World" application

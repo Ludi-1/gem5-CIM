@@ -1,8 +1,9 @@
 from m5.params import *
 from m5.objects.Process import EmulatedDriver
 from m5.objects.Device import BasicPioDevice
+from m5.objects.Device import DmaVirtDevice
 
-#cim device
+# BasicCIM device
 class BasicCIM(BasicPioDevice):
     type = 'BasicCIM'
     cxx_header = "cim/basic_cim.hh"
@@ -11,7 +12,7 @@ class BasicCIM(BasicPioDevice):
     pio_size = Param.Addr(0x1000, "PIO Size")
     memory_data = Param.String(0, "Intial data content of device")
 
-#fake drivers for CIM device
+# Fake drivers for BasicCIM device in SE mode
 class CIMDriver(EmulatedDriver):
     type = 'CIMDriver'
     cxx_header = 'cim/cim_driver.hh'

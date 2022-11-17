@@ -32,8 +32,8 @@ class BasicCIM : public BasicPioDevice
 
     void functionalAccess(PacketPtr pkt);
 
-    std::vector<uint64_t> deviceStorage;
-    void exitCallback(std::vector<uint64_t> deviceStorage);
+    std::vector<uint16_t> deviceStorage;
+    void exitCallback(std::vector<uint16_t> deviceStorage);
 
   private:
     CIMDriver *_driver;

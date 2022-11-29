@@ -8,7 +8,6 @@ and lists known issues (VII).
 I. Overview
 ===========
 
-The sources in this directory provide three SystemC modules that manage the
 SystemC/gem5 co-simulation: Gem5SimControl, Gem5MasterTransactor, and
 Gem5SlaveTransactor. They also implement gem5's ExternalMaster::Port interface
 (SCMasterPort) and ExternalSlave::Port interface (SCSlavePort).

@@ -1,11 +1,16 @@
 Import('*')
 
-SimObject('CIM.py', sim_objects=['CIMDriver', 'BasicCIM'])
+SimObject('CIM.py', \
+    sim_objects=['CIMDriver', 'BasicCIM', 'NanoCIM', 'NanoCIMDriver'])
 
-Source('basic_cim.cc')
 Source('cim_driver.cc')
+Source('basic_cim.cc')
+Source('nano_cim.cc')
+Source('nano_cim_driver.cc')
 
-DebugFlag('BasicCIM')
 DebugFlag('CIMDriver')
+DebugFlag('BasicCIM')
+DebugFlag('NanoCIM')
+DebugFlag('NanoCIMDriver')
 
-CompoundFlag('CIMALL', ['BasicCIM', 'CIMDriver'])
+CompoundFlag('CIMALL', ['CIMDriver','BasicCIM', 'NanoCIM', 'NanoCIMDriver'])

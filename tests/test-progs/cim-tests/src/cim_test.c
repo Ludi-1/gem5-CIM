@@ -41,12 +41,15 @@ int main(void)
   const char str1[] = "string 1";
   const char str2[] = "string 2";
 
+  // write to cim addr
   strcpy(cimPtr, str1);
   strcpy((cimPtr+9), str2);
 
+  // write specific cim addr
   uint32_t* testPtr = (uint32_t*) (cimPtr + 16);
   *testPtr = 21;
 
+  // read value from cim addr
   uint32_t value = *(uint32_t*) (cimPtr + 16);
   printf("text: %u\n", value);
 

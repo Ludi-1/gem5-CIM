@@ -7,6 +7,7 @@ Source('cim_driver.cc')
 Source('basic_cim.cc')
 Source('nano_cim.cc')
 Source('nano_cim_driver.cc')
+Source('sc_cim.cc')
 
 DebugFlag('CIMDriver')
 DebugFlag('BasicCIM')

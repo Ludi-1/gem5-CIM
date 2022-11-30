@@ -4,7 +4,8 @@ variable when running scons so that it gets picked up as part of gem5's build.
 For example:
 
 scons build/ARM/gem5.opt \
-          EXTRAS=util/systemc/systemc_within_gem5/systemc_sc_main
+          EXTRAS=util/systemc/systemc_within_gem5/systemc_sc_main \
+          USE_SYSTEMC=True
 
 Then when running gem5, you can use the config.py in the corresponding
 directory.

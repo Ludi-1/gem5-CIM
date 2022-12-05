@@ -195,7 +195,6 @@ class Gem5ToTlmBridge : public Gem5ToTlmBridgeBase
 
   public:
     gem5::Port &gem5_getPort(const std::string &if_name, int idx=-1) override;
-
     typedef gem5::Gem5ToTlmBridgeBaseParams Params;
     Gem5ToTlmBridge(const Params &p, const sc_core::sc_module_name &mn);
 

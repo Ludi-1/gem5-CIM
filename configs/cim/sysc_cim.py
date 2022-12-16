@@ -12,6 +12,7 @@ system.clk_domain.voltage_domain = VoltageDomain()
 
 # Set up the system
 system.mem_mode = 'atomic'               # Use timing accesses
+#system.mem_mode = 'timing'
 
 # Create an address range
 system.mem_ranges = [AddrRange('8192MB'), \
@@ -20,6 +21,7 @@ system.mem_ranges = [AddrRange('8192MB'), \
 
 # Create a simple CPU
 system.cpu = AtomicSimpleCPU()
+#system.cpu = TimingSimpleCPU()
 
 # Create a memory bus, a system crossbar, in this case
 system.membus = SystemXBar()
@@ -57,10 +59,6 @@ cim_driver.device_addr = 0x200000000
 # Connect the system up to the membus
 system.system_port = system.membus.cpu_side_ports
 
-#CIM Driver
-# cim_driver = CIMDriver(filename = "cim")
-# cim_driver.device = system.cim
-
 # get ISA for the binary to run.
 isa = str(m5.defines.buildEnv['TARGET_ISA']).lower()
 
@@ -86,8 +84,6 @@ kernel = SystemC_Kernel(system=system)
 root = Root(full_system = False, systemc_kernel = kernel)
 # instantiate all of the objects we've created above
 m5.instantiate()
-
-# system.cpu.workload[0].map(0x10000000, 0x200000000, 4096)
 
 print("Beginning simulation!")
 exit_event = m5.simulate()

@@ -278,7 +278,7 @@ Gem5ToTlmBridge<BITWIDTH>::recvAtomic(PacketPtr packet)
         packet->makeResponse();
 
     trans->release();
-
+    std::cout << "Atomic delay: " << delay.value() << std::endl;
     return delay.value();
 }
 
@@ -311,7 +311,7 @@ Gem5ToTlmBridge<BITWIDTH>::recvAtomicBackdoor(
         packet->makeResponse();
 
     trans->release();
-
+    std::cout << "Atomic Backdoor delay: " << delay.value() << std::endl;
     return delay.value();
 }
 
@@ -379,6 +379,7 @@ Gem5ToTlmBridge<BITWIDTH>::recvTimingReq(PacketPtr packet)
      *       END_REQ. Then, a warning should be printed.
      */
     auto delay = sc_core::sc_time::from_value(packet->payloadDelay);
+    std::cout << "Timing delay value: " << delay.value() << std::endl;
     // Reset the delays
     packet->payloadDelay = 0;
     packet->headerDelay = 0;

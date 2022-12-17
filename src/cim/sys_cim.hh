@@ -25,33 +25,49 @@ using namespace gem5;
 
 SC_MODULE(SysCIM)
 {
-  public:
-    tlm_utils::simple_target_socket<SysCIM> tSocket;
-    sc_gem5::TlmTargetWrapper<32> wrapper;
-    // tlm_utils::peq_with_cb_and_phase<SysCIM> m_peq;
+    public:
+        tlm_utils::simple_target_socket<SysCIM> tSocket;
+        sc_gem5::TlmTargetWrapper<32> wrapper;
 
-  private:
+        /** TLM related member variables: */
+        tlm::tlm_generic_payload*  transaction_in_progress;
+        sc_core::sc_event          target_done_event;
+        bool                       response_in_progress;
+        // bool                       debug;
+        tlm::tlm_generic_payload*  next_response_pending;
+        tlm::tlm_generic_payload*  end_req_pending;
+        tlm_utils::peq_with_cb_and_phase<SysCIM> m_peq;
+
+    private:
     //unsigned char mem[512];
-    unsigned char *mem;
+        unsigned char *mem;
 
   public:
     SC_HAS_PROCESS(SysCIM);
     SysCIM(sc_core::sc_module_name name) :
-         sc_module(name),
-         tSocket("tSocket"),
-         wrapper(tSocket, std::string(name) + ".tlm", InvalidPortID)
+        sc_module(name),
+        tSocket("tSocket"),
+        wrapper(tSocket, std::string(name) + ".tlm", InvalidPortID),
+        transaction_in_progress(0),
+        response_in_progress(false),
+        next_response_pending(0),
+        end_req_pending(0),
+        m_peq(this, &SysCIM::peq_cb)
     {
         tSocket.register_b_transport(this, &SysCIM::b_transport);
         tSocket.register_transport_dbg(this, &SysCIM::transport_dbg);
         tSocket.register_nb_transport_fw(this, &SysCIM::nb_transport_fw);
         mem = (unsigned char *)malloc(16*1024*1024);
+        SC_METHOD(execute_transaction_process);
+        sensitive << target_done_event;
+        dont_initialize();
         std::cout << "SysCIM Online" << std::endl;
     }
 
     gem5::Port &gem5_getPort(const std::string &if_name, int idx=-1);
 
     virtual void b_transport(tlm::tlm_generic_payload& trans,
-                             sc_core::sc_time& delay);
+                            sc_core::sc_time& delay);
     virtual unsigned int transport_dbg(tlm::tlm_generic_payload& trans);
     virtual tlm::tlm_sync_enum nb_transport_fw(
                 tlm::tlm_generic_payload& trans,
@@ -59,9 +75,16 @@ SC_MODULE(SysCIM)
                 sc_core::sc_time& delay);
 
     /** Callback of Payload Event Queue: */
-    // void peq_cb(tlm::tlm_generic_payload& trans,
-    //             const tlm::tlm_phase& phase);
+    void peq_cb(tlm::tlm_generic_payload& trans,
+                const tlm::tlm_phase& phase);
+
+    /** Helping functions and processes: */
+    void send_end_req(tlm::tlm_generic_payload& trans);
+    void send_response(tlm::tlm_generic_payload& trans);
     void executeTransaction(tlm::tlm_generic_payload& trans);
+
+    /** Method process that runs on target_done_event */
+    void execute_transaction_process();
 };
 
 #endif // __CIM_SYS_CIM_HH__

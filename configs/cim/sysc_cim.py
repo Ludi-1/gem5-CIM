@@ -11,8 +11,8 @@ system.clk_domain.clock = '1GHz'
 system.clk_domain.voltage_domain = VoltageDomain()
 
 # Set up the system
-system.mem_mode = 'atomic'               # Use timing accesses
-#system.mem_mode = 'timing'
+#system.mem_mode = 'atomic'               # Use timing accesses
+system.mem_mode = 'timing'
 
 # Create an address range
 system.mem_ranges = [AddrRange('8192MB'), \
@@ -20,8 +20,8 @@ system.mem_ranges = [AddrRange('8192MB'), \
                     ]
 
 # Create a simple CPU
-system.cpu = AtomicSimpleCPU()
-#system.cpu = TimingSimpleCPU()
+#system.cpu = AtomicSimpleCPU()
+system.cpu = TimingSimpleCPU()
 
 # Create a memory bus, a system crossbar, in this case
 system.membus = SystemXBar()

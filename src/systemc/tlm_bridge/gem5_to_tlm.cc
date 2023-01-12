@@ -278,6 +278,7 @@ Gem5ToTlmBridge<BITWIDTH>::recvAtomic(PacketPtr packet)
         packet->makeResponse();
 
     trans->release();
+
     return delay.value();
 }
 
@@ -310,7 +311,7 @@ Gem5ToTlmBridge<BITWIDTH>::recvAtomicBackdoor(
         packet->makeResponse();
 
     trans->release();
-    // std::cout << "Atomic Backdoor delay: " << delay.value() << std::endl;
+
     return delay.value();
 }
 
@@ -378,8 +379,6 @@ Gem5ToTlmBridge<BITWIDTH>::recvTimingReq(PacketPtr packet)
      *       END_REQ. Then, a warning should be printed.
      */
     auto delay = sc_core::sc_time::from_value(packet->payloadDelay);
-    // std::cout << "Transport timing delay value: " \
-    //     << delay.value() << std::endl;
     // Reset the delays
     packet->payloadDelay = 0;
     packet->headerDelay = 0;
@@ -391,12 +390,10 @@ Gem5ToTlmBridge<BITWIDTH>::recvTimingReq(PacketPtr packet)
     status = socket->nb_transport_fw(*trans, phase, delay);
     // Check returned value:
     if (status == tlm::TLM_ACCEPTED) {
-        std::cout << "gem5_to_tlm recvTimingReq: TLM_ACCEPTED" << std::endl;
         sc_assert(phase == tlm::BEGIN_REQ);
         // Accepted but is now blocking until END_REQ (exclusion rule).
         blockingRequest = trans;
     } else if (status == tlm::TLM_UPDATED) {
-        std::cout << "gem5_to_tlm recvTimingReq: TLM_UPDATED" << std::endl;
         // The Timing annotation must be honored:
         sc_assert(phase == tlm::END_REQ || phase == tlm::BEGIN_RESP);
         // Accepted but is now blocking until END_REQ (exclusion rule).
@@ -406,7 +403,6 @@ Gem5ToTlmBridge<BITWIDTH>::recvTimingReq(PacketPtr packet)
                 cb, "pec", true, getPriorityOfTlmPhase(phase));
         system->schedule(event, curTick() + delay.value());
     } else if (status == tlm::TLM_COMPLETED) {
-        std::cout << "gem5_to_tlm recvTimingReq: TLM_COMPLETED" << std::endl;
         // Transaction is over nothing has do be done.
         sc_assert(phase == tlm::END_RESP);
         trans->release();
@@ -478,7 +474,6 @@ tlm::tlm_sync_enum
 Gem5ToTlmBridge<BITWIDTH>::nb_transport_bw(tlm::tlm_generic_payload &trans,
     tlm::tlm_phase &phase, sc_core::sc_time &delay)
 {
-    std::cout << "gem5_to_tlm nb_transport_bw called" << std::endl;
     auto cb = [this, &trans, phase]() { pec(trans, phase); };
     auto event = new EventFunctionWrapper(
             cb, "pec", true, getPriorityOfTlmPhase(phase));

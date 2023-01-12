@@ -21,13 +21,11 @@ using namespace gem5;
 void SysCIM::b_transport(tlm::tlm_generic_payload& trans,
                             sc_core::sc_time& delay)
 {
-    cout << "b_transport called" << endl;
     executeTransaction(trans);
 }
 
 unsigned int SysCIM::transport_dbg(tlm::tlm_generic_payload& trans)
 {
-    cout << "transport_dbg called" << endl;
     unsigned int len = trans.get_data_length();
     return len;
 }
@@ -37,7 +35,9 @@ tlm::tlm_sync_enum SysCIM::nb_transport_fw(tlm::tlm_generic_payload& trans,
                                            tlm::tlm_phase& phase,
                                            sc_time& delay)
 {
-    cout << "SysCIM: nb_transport_fw called" << endl;
+    cout << sc_time_stamp() << " SysCIM: nb_transport_fw() "
+        << "|| delay = " << delay << " "
+        << "|| phase = " << phase << endl;
     /* Queue the transaction until the annotated time has elapsed */
     m_peq.notify(trans, phase, delay);
     trans.set_response_status( tlm::TLM_OK_RESPONSE );
@@ -46,15 +46,12 @@ tlm::tlm_sync_enum SysCIM::nb_transport_fw(tlm::tlm_generic_payload& trans,
 
 void SysCIM::executeTransaction(tlm::tlm_generic_payload& trans)
 {
-    long phys_addr = 0x200000000;
+    sc_dt::uint64 phys_addr = 0x200000000;
     tlm::tlm_command cmd = trans.get_command();
     sc_dt::uint64    adr = trans.get_address() - phys_addr;
     unsigned char*   ptr = trans.get_data_ptr();
     unsigned int     len = trans.get_data_length();
     unsigned char*   byt = trans.get_byte_enable_ptr();
-
-    cout << "ptr addr: " << reinterpret_cast<void *>(ptr) << endl;
-    cout << "value in ptr: " << *reinterpret_cast<int*>(ptr) << endl;
 
     if (adr >= 16*1024*1024) {
         cout << "\033[1;31m("
@@ -77,26 +74,26 @@ void SysCIM::executeTransaction(tlm::tlm_generic_payload& trans)
         trans.set_response_status( tlm::TLM_BURST_ERROR_RESPONSE );
         return;
     }
-
+    sc_core::sc_time delay;
     if (cmd == tlm::TLM_READ_COMMAND)
     {
-        cout << "read command" << endl;
+        delay = sc_core::sc_time(190.0, sc_time_unit::SC_NS); // Read delay
         memcpy(ptr,      // destination
                 mem + adr, // source
                 trans.get_data_length());  // size
     }
     else if (cmd == tlm::TLM_WRITE_COMMAND)
     {
-        cout << "write command" << endl;
+        delay = sc_core::sc_time(170.0, sc_time_unit::SC_NS); // Write delay
         memcpy(mem + adr, // destination
                 ptr,      // source
                 trans.get_data_length());  // size
     }
 
-    cout << name()
-            << setfill(' ') << setw(12) << sc_time_stamp()
-            << ": " << setw(12) << (cmd ? "Exec. Write " : "Exec. Read ")
-            << "Addr = " << setfill('0') << setw(8) << hex << adr
+    cout << sc_time_stamp()
+            << " SysCIM: executeTransaction()"
+            << (cmd ? " || write" : " || read")
+            << " Addr = " << setfill('0') << setw(8) << hex << adr
             << " Data = " << *reinterpret_cast<int*>(ptr) << endl;
 
     trans.set_response_status( tlm::TLM_OK_RESPONSE );
@@ -106,11 +103,11 @@ void
 SysCIM::peq_cb(tlm::tlm_generic_payload& trans,
                const tlm::tlm_phase& phase)
 {
-    cout << "peq_cb called" << endl;
     sc_core::sc_time delay;
 
     if (phase == tlm::BEGIN_REQ) {
-        cout << "peq_cb: begin phase" << endl;
+        cout << sc_time_stamp() << " SysCIM: peq_cb() "
+            << "|| begin_req start" << endl;
         /* Increment the transaction reference count */
         trans.acquire();
 
@@ -121,8 +118,11 @@ SysCIM::peq_cb(tlm::tlm_generic_payload& trans,
              * pipeline is clear */
             end_req_pending = &trans;
         }
+        cout << sc_time_stamp() << " SysCIM: peq_cb() "
+            << "|| begin_req done" << endl;
     } else if (phase == tlm::END_RESP) {
-        cout << "peq_cb: end phase" << endl;
+        cout << sc_time_stamp() << " SysCIM: peq_cb() "
+            << "|| end_req start" << endl;
         /* On receiving END_RESP, the target can release the transaction and
          * allow other pending transactions to proceed */
         if (!response_in_progress) {
@@ -144,7 +144,8 @@ SysCIM::peq_cb(tlm::tlm_generic_payload& trans,
             send_end_req( *end_req_pending );
             end_req_pending = 0;
         }
-
+        cout << sc_time_stamp() << " SysCIM: peq_cb() "
+            << "|| end_req done" << endl;
     } else /* tlm::END_REQ or tlm::BEGIN_RESP */ {
             cout << "peq_cb: illegal phase" << endl;
             SC_REPORT_FATAL("TLM-2", "Illegal transaction phase received by"
@@ -155,7 +156,8 @@ SysCIM::peq_cb(tlm::tlm_generic_payload& trans,
 void
 SysCIM::send_end_req(tlm::tlm_generic_payload& trans)
 {
-    cout << "send_end_req called" << endl;
+    cout << sc_time_stamp() << " SysCIM: send_end_req() "
+        << "|| start" << endl;
 
     tlm::tlm_phase bw_phase;
     sc_core::sc_time delay;
@@ -174,13 +176,15 @@ SysCIM::send_end_req(tlm::tlm_generic_payload& trans)
 
     assert(transaction_in_progress == 0);
     transaction_in_progress = &trans;
-    cout << "send_end_req: success" << endl;
+    cout << sc_time_stamp() << " SysCIM: send_end_req() "
+        << "|| done" << endl;
 }
 
 void
 SysCIM::send_response(tlm::tlm_generic_payload& trans)
 {
-    cout << "send_response called" << endl;
+    cout << sc_time_stamp() << " SysCIM: send_response() "
+        << "|| start" << endl;
 
     tlm::tlm_sync_enum status;
     tlm::tlm_phase bw_phase;
@@ -200,11 +204,15 @@ SysCIM::send_response(tlm::tlm_generic_payload& trans)
         response_in_progress = false;
     }
     trans.release();
+
+    cout << sc_time_stamp() << " SysCIM: send_response() || done" << endl;
 }
 
 void
 SysCIM::execute_transaction_process()
 {
+    cout << sc_time_stamp() << " SysCIM: execute_transaction_process() "
+        << "|| start" << endl;
     /* Execute the read or write commands */
     executeTransaction( *transaction_in_progress );
 
@@ -220,6 +228,8 @@ SysCIM::execute_transaction_process()
     } else {
         send_response( *transaction_in_progress );
     }
+    cout << sc_time_stamp() << " SysCIM: execute_transaction_process() "
+        << "|| done" << endl;
 }
 
 // This "create" method bridges the python configuration and the systemc

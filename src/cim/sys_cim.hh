@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/trace.hh"
+#include "cim/cim_tile.h"
 #include "debug/SysCIM.hh"
 #include "params/SysCIM.hh"
 #include "systemc/ext/core/sc_module_name.hh"
@@ -61,7 +62,7 @@ SC_MODULE(SysCIM)
         SC_METHOD(execute_transaction_process);
         sensitive << target_done_event;
         dont_initialize();
-        std::cout << "SysCIM Online" << std::endl;
+        std::cout << "SysCIM: Initialized" << std::endl;
     }
 
     gem5::Port &gem5_getPort(const std::string &if_name, int idx=-1);
